@@ -1,0 +1,66 @@
+START PROGRAM
+
+DEFINE a list called chickens with some initial chicken names
+
+DEFINE FUNCTION print_menu
+    DISPLAY all menu options (0 to 4)
+
+DEFINE FUNCTION print_chickens
+    IF chicken list is empty
+        DISPLAY "No chicken records available"
+    ELSE
+        FOR each chicken in the list with index
+            DISPLAY number and name
+
+DEFINE FUNCTION add_chicken
+    PROMPT user to enter a new chicken name
+    IF name is not empty
+        ADD name to chickens list
+        DISPLAY success message
+    ELSE
+        DISPLAY error message
+
+DEFINE FUNCTION update_chicken
+    CALL print_chickens
+    PROMPT user to enter the number of the chicken to update
+    CONVERT input to index (subtract 1)
+    IF index is valid
+        PROMPT user for a new name
+        REPLACE chicken name at index with new name
+        DISPLAY success message
+    ELSE
+        DISPLAY error message
+
+DEFINE FUNCTION delete_chicken
+    CALL print_chickens
+    PROMPT user to enter the number of the chicken to delete
+    CONVERT input to index (subtract 1)
+    IF index is valid
+        REMOVE chicken from list using index
+        DISPLAY success message
+    ELSE
+        DISPLAY error message
+
+DEFINE FUNCTION main
+    LOOP forever
+        CALL print_menu
+        PROMPT user to enter a choice
+        IF choice is "0"
+            DISPLAY exit message
+            BREAK loop to exit program
+        ELSE IF choice is "1"
+            CALL print_chickens
+        ELSE IF choice is "2"
+            CALL add_chicken
+        ELSE IF choice is "3"
+            CALL update_chicken
+        ELSE IF choice is "4"
+            CALL delete_chicken
+        ELSE
+            DISPLAY invalid choice message
+
+        PROMPT user to press Enter to continue
+
+CALL main function to start the program
+
+END PROGRAM
