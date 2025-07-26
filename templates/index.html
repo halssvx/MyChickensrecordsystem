@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chicken Record System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="container mt-5">
+
+    <h1 class="mb-4 text-primary">🐔 Chicken Record System</h1>
+
+    <h2>Chicken List</h2>
+    <ul class="list-group mb-4">
+        {% for id, name in chickens %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ name }}</span>
+            <div>
+                <form action="/update/{{ id }}" method="POST" class="d-inline">
+                    <input type="text" name="new_name" placeholder="New name" required class="form-control d-inline w-auto">
+                    <button type="submit" class="btn btn-warning btn-sm">Update</button>
+                </form>
+                <form action="/delete/{{ id }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Add Chicken</h2>
+    <form action="/add" method="POST" class="d-flex gap-2 mb-5">
+        <input name="name" placeholder="Chicken name" required class="form-control w-auto">
+        <button type="submit" class="btn btn-success">Add</button>
+    </form>
+
+</body>
+</html>
