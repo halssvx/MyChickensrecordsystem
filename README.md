@@ -100,13 +100,3 @@ CLI interaction
 
 Docker basics (containerization, image building, etc.)
 
-📸 Optional Additions
-If you'd like to enhance your README further, consider adding:
-
-✅ Screenshots of terminal usage
-
-✅ GIFs or short videos (via asciinema or screen capture)
-
-✅ Contribution guidelines (if making it public)
-
-✅ GitHub badges (like "Build Passing", "Python 3", etc.)
