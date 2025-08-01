@@ -1,0 +1,7 @@
+{
+  "name": "Flask App",
+  "context": "..",
+  "dockerFile": "../Dockerfile",
+  "appPort": [5000],
+  "workspaceFolder": "/app"
+}

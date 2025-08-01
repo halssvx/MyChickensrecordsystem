@@ -1,112 +1,158 @@
-🐔 MyChickensRecordSystem — Chicken-UI PID
-Overview
-Chicken-UI PID is a command-line interface (CLI) application built in Python to help a local chicken breeder manage their chicken records. This is a Proof of Concept (PoC) designed to demonstrate how a paper-based system can be replaced with a simple, local digital solution.
+🐔 Chicken Record System on EKS – Flask App with CI/CD
+This project is a Flask-based web app that allows you to manage a list of chickens. It uses:
 
-✅ Features
-Text-based interactive menu
+Flask with SQLite
 
-In-memory chicken record management
+Docker for containerization
 
-Clean and modular code using Python functions
+Kubernetes (EKS) for orchestration
 
-Input validation and user-friendly messages
+Terraform to provision infrastructure
 
-Lightweight and portable (no dependencies)
+GitHub Actions for CI/CD
 
-🧠 What You Can Do
-View a list of chickens
-
-Add a new chicken record
-
-Update an existing chicken's name
-
-Delete a chicken record
-
-Exit the application
-
-📦 Requirements
-Python 3.x
-
-Runs in terminal (Windows, macOS, Linux)
-
-No third-party libraries required
-
-📁 Installation
-🔽 Clone the Repository
+🗂 Project Structure
 bash
 Copy
 Edit
-git clone https://github.com/your-username/chicken-ui-pid.git
-cd chicken-ui-pid
-🐍 Run the Application
+.
+├── app.py                  # Flask application
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Container build setup
+├── templates/
+│   └── index.html          # Chicken list UI
+├── static/
+│   └── styles.css          # CSS styles
+├── k8s/
+│   ├── pvc.yaml            # PersistentVolumeClaim
+│   ├── service.yaml        # LoadBalancer Service
+│   └── eks-deployment.yaml # Deployment for EKS
+├── terraform/
+│   ├── main.tf             # Main EKS Terraform config
+│   ├── variables.tf        # Variables for Terraform
+│   └── outputs.tf          # Terraform outputs
+└── .github/workflows/
+    └── deploy.yml          # GitHub Actions CI/CD pipeline
+🧪 Local Setup
+Clone the repository
+
 bash
 Copy
 Edit
-python chicken_ui.py
-🐳 Docker Support
-You can also run the app inside a Docker container.
+git clone <your-repo-url>
+cd your-repo
+Run locally
 
-🛠️ Build the Docker Image
 bash
 Copy
 Edit
-docker build -t chicken_app .
-▶️ Run the Container
+pip install -r requirements.txt
+python app.py
+Navigate to http://localhost:5000
+
+🐳 Docker Instructions
+Build the Docker image
+
 bash
 Copy
 Edit
-docker run -it --rm chicken_app
-This runs the app interactively in a clean environment with Python 3.11 installed.
+docker build -t chicken-app .
+Run the container
 
-📂 Code Structure
-chicken_ui.py
-Function	Description
-print_menu()	Displays the main menu options
-print_chickens()	Lists all current chicken records
-add_chicken()	Adds a new chicken to the list
-update_chicken()	Updates the name of an existing chicken
-delete_chicken()	Deletes a chicken by index
-main()	Runs the interactive menu loop
-
-Data Structure
-python
+bash
 Copy
 Edit
-chickens = ["George", "Fleur", "Devon", "Casey", "Marigold", "Apple Mint"]
-🛠️ Planned Enhancements
- Save/load records from a .csv file
+docker run -p 5000:5000 chicken-app
+☸ Deploy to Kubernetes (EKS)
+1. Provision the EKS Cluster with Terraform
+Go to the Terraform folder:
 
- Add search functionality
+bash
+Copy
+Edit
+cd terraform/
+Edit the values in variables.tf:
 
- Add backup/restore feature
+Add your IAM user ARN
 
- Add GUI (e.g., Tkinter or PySimpleGUI)
+Add your EKS node group role ARN
 
- Add unit tests
+Initialize and deploy the cluster:
 
-📝 License
-This project is open-source and free to use for educational or personal purposes.
+bash
+Copy
+Edit
+terraform init
+terraform apply
+2. Connect to Your EKS Cluster
+bash
+Copy
+Edit
+aws eks update-kubeconfig --region us-east-1 --name chicken-cluster
+3. Deploy Kubernetes Resources
+bash
+Copy
+Edit
+kubectl apply -f k8s/
+This includes:
 
-👩‍💻 Author
-Developed as a learning project to practice:
+Your Flask app
 
-Python fundamentals
+PersistentVolume for the SQLite DB
 
-Functions and conditionals
+LoadBalancer Service (you’ll get a public IP)
 
-Loops and list operations
+🚀 CI/CD with GitHub Actions
+1. Configure GitHub Secrets
+In your GitHub repo, go to Settings > Secrets and variables > Actions > New repository secret and add:
 
-CLI interaction
+Secret Name	Description
+AWS_ACCESS_KEY_ID	Your IAM access key
+AWS_SECRET_ACCESS_KEY	Your IAM secret key
 
-Docker basics (containerization, image building, etc.)
+2. Push to main
+Every time you push to the main branch, this happens automatically:
 
-📸 Optional Additions
-If you'd like to enhance your README further, consider adding:
+Docker image is built
 
-✅ Screenshots of terminal usage
+Pushed to ECR
 
-✅ GIFs or short videos (via asciinema or screen capture)
+Kubernetes is updated with the new image
 
-✅ Contribution guidelines (if making it public)
+You can find the GitHub Actions workflow in .github/workflows/deploy.yml.
 
-✅ GitHub badges (like "Build Passing", "Python 3", etc.)
+📚 Learning Tips
+If you're new to Kubernetes, focus on:
+
+Deployments
+
+Services (especially LoadBalancer type)
+
+Volumes/PVCs
+
+If you're new to Terraform, focus on:
+
+Modules (especially the AWS EKS module)
+
+terraform apply, destroy, output
+
+✅ To-Do Checklist
+ Build ECR repo in AWS (use aws ecr create-repository)
+
+ Replace placeholder image names with your actual ECR URL
+
+ Fill in your IAM ARNs in Terraform config
+
+ Run terraform apply
+
+ Push your code to GitHub and let CI/CD do the rest
+
+🤝 Help
+Having trouble? Common fixes:
+
+Make sure your IAM user has EKS + ECR permissions
+
+Use the same AWS region everywhere
+
+If kubectl isn’t working, try aws eks update-kubeconfig again
+
