@@ -113,6 +113,7 @@ AWS_SECRET_ACCESS_KEY	Your IAM secret key
 2. Push to main
 Every time you push to the main branch, this happens automatically:
 
+<<<<<<< HEAD
 Docker image is built
 
 Pushed to ECR
@@ -156,3 +157,5 @@ Use the same AWS region everywhere
 
 If kubectl isn’t working, try aws eks update-kubeconfig again
 
+=======
+>>>>>>> 4604d7b5f6015aa50e2ba2bf894d34c03bb54110
