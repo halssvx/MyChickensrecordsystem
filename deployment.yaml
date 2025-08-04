@@ -11,8 +11,8 @@ spec:
     metadata:
       labels:
         app: chicken-app
-  spec:  
-    containers:
+    spec:  # <-- ONLY ONE "spec" here
+      containers:
       - name: chicken-app
         image: chicken-app:latest
         imagePullPolicy: IfNotPresent
@@ -20,14 +20,9 @@ spec:
         - containerPort: 5000
         volumeMounts:
         - name: chicken-storage
-          mountPath: /app/chickens.db
+          mountPath: /app/data
           subPath: chickens.db
-    volumes:
+      volumes:
       - name: chicken-storage
         persistentVolumeClaim:
           claimName: chicken-pvc
-        volumeMounts:
-        - name: chicken-storage
-          mountPath: /data
-
-      
