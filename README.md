@@ -1,161 +1,131 @@
-🐔 Chicken Record System on EKS – Flask App with CI/CD
-This project is a Flask-based web app that allows you to manage a list of chickens. It uses:
+CHICKENS MANAGER - FLASK + SQLITE + MINIKUBE APP
 
-Flask with SQLite
+This is a simple CRUD (Create, Read, Update, Delete) web application for managing a list of chickens. The app is built using Flask, stores data in a SQLite database, and is containerized and deployed using Kubernetes via Minikube.
 
-Docker for containerization
+WHAT THE APP DOES:
 
-Kubernetes (EKS) for orchestration
+- Displays a list of chickens from a database.
+- Allows users to:
+  - Add new chickens
+  - Edit existing chicken names
+  - Delete chickens
+- Uses SQLite as a lightweight database.
+- Initializes with 6 default chickens if the database is empty.
 
-Terraform to provision infrastructure
+PROJECT STRUCTURE:
 
-GitHub Actions for CI/CD
-
-🗂 Project Structure
-bash
-Copy
-Edit
-.
-├── app.py                  # Flask application
-├── requirements.txt        # Python dependencies
-├── Dockerfile              # Container build setup
+chickensIU/
+├── app.py               --> Flask application
 ├── templates/
-│   └── index.html          # Chicken list UI
-├── static/
-│   └── styles.css          # CSS styles
-├── k8s/
-│   ├── pvc.yaml            # PersistentVolumeClaim
-│   ├── service.yaml        # LoadBalancer Service
-│   └── eks-deployment.yaml # Deployment for EKS
-├── terraform/
-│   ├── main.tf             # Main EKS Terraform config
-│   ├── variables.tf        # Variables for Terraform
-│   └── outputs.tf          # Terraform outputs
-└── .github/workflows/
-    └── deploy.yml          # GitHub Actions CI/CD pipeline
-🧪 Local Setup
-Clone the repository
+│   └── index.html       --> Frontend HTML page
+├── Dockerfile           --> Container definition
+├── deployment.yaml      --> Kubernetes deployment and service
+└── chickens.db          --> Auto-created SQLite DB (local use only)
 
-bash
-Copy
-Edit
-git clone <your-repo-url>
-cd your-repo
-Run locally
+HOW TO RUN LOCALLY (WITHOUT DOCKER):
 
-bash
-Copy
-Edit
-pip install -r requirements.txt
-python app.py
-Navigate to http://localhost:5000
+1. Create a virtual environment:
+   python -m venv venv
 
-🐳 Docker Instructions
-Build the Docker image
+2. Activate the environment:
+   On macOS/Linux: source venv/bin/activate
+   On Windows: venv\Scripts\activate
 
-bash
-Copy
-Edit
-docker build -t chicken-app .
-Run the container
+3. Install Flask:
+   pip install flask
 
-bash
-Copy
-Edit
-docker run -p 5000:5000 chicken-app
-☸ Deploy to Kubernetes (EKS)
-1. Provision the EKS Cluster with Terraform
-Go to the Terraform folder:
+4. Run the app:
+   python app.py
 
-bash
-Copy
-Edit
-cd terraform/
-Edit the values in variables.tf:
+Then open http://localhost:5000 in your browser.
 
-Add your IAM user ARN
+DOCKERIZING THE APP:
 
-Add your EKS node group role ARN
+Dockerfile should look like this:
 
-Initialize and deploy the cluster:
+FROM python:3.11-slim
+WORKDIR /app
+COPY . /app
+RUN pip install flask
+EXPOSE 5000
+CMD ["python", "app.py"]
 
-bash
-Copy
-Edit
-terraform init
-terraform apply
-2. Connect to Your EKS Cluster
-bash
-Copy
-Edit
-aws eks update-kubeconfig --region us-east-1 --name chicken-cluster
-3. Deploy Kubernetes Resources
-bash
-Copy
-Edit
-kubectl apply -f k8s/
-This includes:
+DEPLOY TO MINIKUBE:
 
-Your Flask app
+1. Start Minikube:
+   minikube start
 
-PersistentVolume for the SQLite DB
+2. Use Minikube’s Docker daemon:
+   On bash: eval $(minikube -p minikube docker-env)
+   On PowerShell: minikube -p minikube docker-env | Invoke-Expression
 
-LoadBalancer Service (you’ll get a public IP)
+3. Build the Docker image:
+   docker build -t chickens-app:latest .
 
-🚀 CI/CD with GitHub Actions
-1. Configure GitHub Secrets
-In your GitHub repo, go to Settings > Secrets and variables > Actions > New repository secret and add:
+4. Create Kubernetes deployment and service:
+   (Create a file named deployment.yaml with the following content)
 
-Secret Name	Description
-AWS_ACCESS_KEY_ID	Your IAM access key
-AWS_SECRET_ACCESS_KEY	Your IAM secret key
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chickens-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chickens
+  template:
+    metadata:
+      labels:
+        app: chickens
+    spec:
+      containers:
+      - name: chickens
+        image: chickens-app:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chickens-service
+spec:
+  type: NodePort
+  selector:
+    app: chickens
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+    nodePort: 30000
 
-2. Push to main
-Every time you push to the main branch, this happens automatically:
+Then run:
+kubectl apply -f deployment.yaml
 
-<<<<<<< HEAD
-Docker image is built
+5. Get Minikube IP:
+   minikube ip
 
-Pushed to ECR
+Visit http://<minikube-ip>:30000/ in your browser.
+(Replace <minikube-ip> with the IP you got)
 
-Kubernetes is updated with the new image
+TROUBLESHOOTING:
 
-You can find the GitHub Actions workflow in .github/workflows/deploy.yml.
+- Check pod status:
+  kubectl get pods
 
-📚 Learning Tips
-If you're new to Kubernetes, focus on:
+- Check logs:
+  kubectl logs <pod-name>
 
-Deployments
+- If the site doesn't load:
+  - Make sure the container is running
+  - Try port-forwarding:
+    kubectl port-forward svc/chickens-service 5000:5000
+    Then visit http://localhost:5000
 
-Services (especially LoadBalancer type)
+TECH USED:
 
-Volumes/PVCs
-
-If you're new to Terraform, focus on:
-
-Modules (especially the AWS EKS module)
-
-terraform apply, destroy, output
-
-✅ To-Do Checklist
- Build ECR repo in AWS (use aws ecr create-repository)
-
- Replace placeholder image names with your actual ECR URL
-
- Fill in your IAM ARNs in Terraform config
-
- Run terraform apply
-
- Push your code to GitHub and let CI/CD do the rest
-
-🤝 Help
-Having trouble? Common fixes:
-
-Make sure your IAM user has EKS + ECR permissions
-
-Use the same AWS region everywhere
-
-If kubectl isn’t working, try aws eks update-kubeconfig again
-
-=======
->>>>>>> 4604d7b5f6015aa50e2ba2bf894d34c03bb54110
+- Python + Flask
+- SQLite
+- Docker
+- Kubernetes + Minikube
