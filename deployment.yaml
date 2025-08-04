@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chicken-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chicken-app
+  template:
+    metadata:
+      labels:
+        app: chicken-app
+  spec:  
+    containers:
+      - name: chicken-app
+        image: chicken-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: chicken-storage
+          mountPath: /app/chickens.db
+          subPath: chickens.db
+    volumes:
+      - name: chicken-storage
+        persistentVolumeClaim:
+          claimName: chicken-pvc
+        volumeMounts:
+        - name: chicken-storage
+          mountPath: /data
+
+      

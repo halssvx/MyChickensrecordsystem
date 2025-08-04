@@ -1,15 +1,17 @@
+# Use official Python image as base
 FROM python:3.11-slim
 
+# Set working directory inside the container
 WORKDIR /app
 
-# Install Flask
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Copy your app code
+COPY . /app
 
-# Copy all files, including templates/
-COPY . .
+# Install dependencies (Flask, sqlite3 is builtin)
+RUN pip install flask
 
-# Expose port
+# Expose port 5000
 EXPOSE 5000
 
+# Run the app
 CMD ["python", "app.py"]
